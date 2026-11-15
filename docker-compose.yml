@@ -1,0 +1,31 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: sentinel-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentinel-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: Sentinel-Gateway
+      REDIS_URL: redis://redis:6379/0
+      REDIS_SOCKET_TIMEOUT: "0.5"
+      FAIL_OPEN: "true"
+      DEFAULT_ALGORITHM: token_bucket
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
