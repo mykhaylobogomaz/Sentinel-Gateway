@@ -11,7 +11,7 @@ class TierPolicy(BaseModel):
 
     capacity: int = Field(..., ge=1, description="Max burst tokens for Token Bucket.")
     refill_rate: float = Field(..., gt=0, description="Tokens replenished per second.")
-    window_size: int = Field(..., ge=1, description="Window duration in seconds for Sliding Window.")
+    window_size: int = Field(..., ge=1, description="Sliding window duration in seconds.")
     max_requests: int = Field(..., ge=1, description="Max requests per window for Sliding Window.")
 
 

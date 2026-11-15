@@ -75,7 +75,8 @@ local reset_seconds = math.max(0.0, window_size - elapsed_in_window)
 if estimated_count + 1 <= max_requests then
     curr_count = redis.call("INCR", curr_key)
     redis.call("EXPIRE", curr_key, window_size * 2)
-    local remaining = math.max(0, math.floor(max_requests - ((prev_count * prev_weight) + curr_count)))
+    local weighted = (prev_count * prev_weight) + curr_count
+    local remaining = math.max(0, math.floor(max_requests - weighted))
     return {1, remaining, tostring(reset_seconds), "0.0"}
 else
     local retry_after = math.max(0.1, reset_seconds)
